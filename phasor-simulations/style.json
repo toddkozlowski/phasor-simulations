@@ -1,0 +1,160 @@
+{
+  "description": "Repository-wide style settings for phasor diagrams",
+  "version": "1.0",
+  
+  "figure": {
+    "figsize": [10, 10],
+    "dpi": 100,
+    "facecolor": "white",
+    "edgecolor": "none"
+  },
+  
+  "axes": {
+    "background_color": "white",
+    "grid": false,
+    "grid_alpha": 0.3,
+    "grid_linestyle": "--",
+    "grid_linewidth": 0.5,
+    "xlabel": "",
+    "ylabel": "",
+    "label_fontsize": 12,
+    "title_fontsize": 14,
+    "title_fontweight": "bold",
+    "spine_linewidth": 1.0,
+    "spine_color": "black"
+  },
+  
+  "unit_circle": {
+    "show": false,
+    "color": "gray",
+    "linestyle": "--",
+    "linewidth": 1.0,
+    "alpha": 0.5,
+    "fill": false
+  },
+  
+  "origin_axes": {
+    "show": true,
+    "color": "black",
+    "linewidth": 0.5,
+    "alpha": 0.3
+  },
+  
+  "result_phasor": {
+    "color": "crimson",
+    "linewidth": 3.0,
+    "alpha": 1.0,
+    "arrowstyle": "->",
+    "head_width": 0.1,
+    "head_length": 0.15,
+    "label_fontsize": 10,
+    "label_fontweight": "bold",
+    "label_color": "crimson"
+  },
+  
+  "constituent_phasors": {
+    "colormap": "viridis",
+    "color_range": [0.2, 0.8],
+    "linewidth": 1.5,
+    "alpha": 0.7,
+    "arrowstyle": "->",
+    "head_width": 0.08,
+    "head_length": 0.12,
+    "label_fontsize": 8,
+    "label_fontweight": "normal",
+    "show_labels": true
+  },
+  
+  "carrier_phasor": {
+    "color": "royalblue",
+    "linewidth": 3.0,
+    "alpha": 1.0,
+    "arrowstyle": "->",
+    "label_fontsize": 12,
+    "label_fontweight": "bold",
+    "label_color": "royalblue"
+  },
+  
+  "sideband_phasors": {
+    "colors": ["darkorange", "forestgreen", "purple", "cyan", "magenta", "gold"],
+    "linewidth": 2.0,
+    "alpha": 0.7,
+    "arrowstyle": "->",
+    "label_fontsize": 9,
+    "label_fontweight": "normal"
+  },
+  
+  "rotation_circles": {
+    "show": true,
+    "color": "gray",
+    "linestyle": ":",
+    "linewidth": 1.0,
+    "alpha": 0.3,
+    "fill": false
+  },
+  
+  "modulation_visualization": {
+    "show_sum": true,
+    "sum_color": "red",
+    "sum_linewidth": 2.5,
+    "sum_linestyle": "-",
+    "phase_markers": true,
+    "marker_size": 50,
+    "marker_style": "o"
+  },
+  
+  "inset_zoom": {
+    "enabled": true,
+    "box_color": "red",
+    "box_linewidth": 2.0,
+    "box_linestyle": "--",
+    "box_alpha": 0.7,
+    "connector_color": "gray",
+    "connector_linewidth": 1.0,
+    "connector_alpha": 0.5,
+    "zoom_factor": 3.0,
+    "inset_position": [0.6, 0.6, 0.35, 0.35]
+  },
+  
+  "annotations": {
+    "fontsize": 9,
+    "fontweight": "normal",
+    "color": "black",
+    "background_color": "white",
+    "background_alpha": 0.7,
+    "box_style": "round,pad=0.3",
+    "arrow_style": "->",
+    "arrow_color": "gray"
+  },
+  
+  "legend": {
+    "show": true,
+    "location": "upper right",
+    "fontsize": 9,
+    "framealpha": 0.9,
+    "shadow": false,
+    "fancybox": true
+  },
+  
+  "colors": {
+    "palette": {
+      "primary": "#1f77b4",
+      "secondary": "#ff7f0e",
+      "accent": "#2ca02c",
+      "highlight": "#d62728",
+      "neutral": "#7f7f7f"
+    },
+    "gradients": {
+      "blue_to_red": ["#0000ff", "#ff0000"],
+      "cool": ["#00ff00", "#0000ff", "#ff00ff"],
+      "warm": ["#ffff00", "#ff8800", "#ff0000"]
+    }
+  },
+  
+  "export": {
+    "default_format": "png",
+    "dpi": 300,
+    "bbox_inches": "tight",
+    "transparent": false
+  }
+}

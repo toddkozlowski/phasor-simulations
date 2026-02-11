@@ -85,6 +85,43 @@ def setup_plot(xlim=None, ylim=None, aspect='equal', axis_linewidth=4.0):
 
     return fig, ax
 
+def draw_square_brace(ax, center, length, angle, color='black', linewidth=2.0):
+    """
+    Draw a square brace (like a '[') at a specified position, length, and angle.
+    
+    Args:
+        ax: Matplotlib axes object
+        center: Tuple (x, y) for the center of the brace
+        length: Total length of the brace
+        angle: Angle in degrees for the orientation of the brace
+        color: Brace color
+        linewidth: Line width
+    """
+    # Calculate the main line of the brace
+    angle_rad = np.radians(angle)
+    dx = (length / 2) * np.cos(angle_rad)
+    dy = (length / 2) * np.sin(angle_rad)
+    
+    start = (center[0] - dx, center[1] - dy)
+    end = (center[0] + dx, center[1] + dy)
+    
+    # Draw the main line of the brace
+    ax.plot([start[0], end[0]], [start[1], end[1]], color=color, linewidth=linewidth, zorder=2)
+    
+    # Draw the orthogonal lines at both ends to mimic the square brace shape
+    orthogonal_angle_rad = angle_rad + np.pi / 2
+    orthogonal_length = length * 0.1  # Adjust this for the size of the orthogonal lines
+    
+    orthogonal_dx = orthogonal_length * np.cos(orthogonal_angle_rad)
+    orthogonal_dy = orthogonal_length * np.sin(orthogonal_angle_rad)
+    
+    # Start end orthogonal line
+    ax.plot([start[0], start[0] + orthogonal_dx], [start[1], start[1] + orthogonal_dy], 
+            color=color, linewidth=linewidth, zorder=2)
+    
+    # End end orthogonal line
+    ax.plot([end[0], end[0] + orthogonal_dx], [end[1], end[1] + orthogonal_dy], 
+            color=color, linewidth=linewidth, zorder=2)
 
 def draw_phasor(ax, start, end, color='#2E86AB', linewidth=2.5, alpha=1.0, label=None):
     """
@@ -364,8 +401,14 @@ def illustration_3_amplitude_modulation():
     draw_double_headed_arrow(ax, center, direction, length=0.55, color='#333333', linewidth=3.5)
     
     # Add label for the amplitude of the carrier and of the modulated signal
-    add_text(ax, (0.7, 0.25), r'$A_0$', fontsize=24, color='#2E86AB')
-    add_text(ax, (0.3, 1.0), r'$A(t) = A_0 \left( 1 + m \cos \omega_m t \right)$', fontsize=24, color='#333333')
+    add_text(ax, (0.6, 0.35), r'$A_0$', fontsize=24, color='#2E86AB')
+    add_text(ax, (0.4, 1.0), r'$A(t) = A_0 \left( 1 + m \cos \omega_m t \right)$', fontsize=24, color='#333333')
+    add_text(ax, (1.1, 0.85), r'$m \cdot A_0$', fontsize=24, color='#333333')
+
+    # Add a square brace '[' to indicate the amplitude variation, angled at 45 degrees to run parallel with the modulation direction
+    brace_center = (end_point[0] + 0.125, end_point[1] + 0.025)
+    draw_square_brace(ax, brace_center, length=0.27, angle=45, color='#333333', linewidth=2.0)
+
 
     plt.tight_layout()
     save_figure(fig, 'illustration_3_carrier_amplitude_variation')
@@ -385,14 +428,14 @@ def illustration_3_amplitude_modulation():
         # Carrier phasor at 45 degrees, magnitude 1
         carrier_angle = np.radians(45)
         carrier_end = (np.cos(carrier_angle), np.sin(carrier_angle))
-        draw_phasor(ax, (0, 0), carrier_end, color='#2E86AB', linewidth=2.5, alpha=0.5)
+        draw_phasor(ax, (0, 0), carrier_end, color='#2E86AB', linewidth=5, alpha=0.5)
         
         # Upper sideband: magnitude 0.2, starts from carrier end
         upper_angle = np.radians(angles[0])
         upper_start = carrier_end
         upper_end = (upper_start[0] + 0.2 * np.cos(upper_angle),
                      upper_start[1] + 0.2 * np.sin(upper_angle))
-        draw_phasor(ax, upper_start, upper_end, color='#A23B72', linewidth=2.0)
+        draw_phasor(ax, upper_start, upper_end, color='#A23B72', linewidth=3.5)
         
         # Draw circle for upper sideband
         draw_circle(ax, carrier_end, 0.2, color='#A23B72', linestyle=':', linewidth=1.0, alpha=0.3)
@@ -409,7 +452,7 @@ def illustration_3_amplitude_modulation():
         lower_start = upper_end
         lower_end = (lower_start[0] + 0.2 * np.cos(lower_angle),
                      lower_start[1] + 0.2 * np.sin(lower_angle))
-        draw_phasor(ax, lower_start, lower_end, color='#C73E1D', linewidth=2.0)
+        draw_phasor(ax, lower_start, lower_end, color='#C73E1D', linewidth=3.5)
         
         # Draw circle for lower sideband
         draw_circle(ax, upper_end, 0.2, color='#C73E1D', linestyle=':', linewidth=1.0, alpha=0.3)
@@ -421,7 +464,8 @@ def illustration_3_amplitude_modulation():
                          arrow_angle_lower - 15, color='#C73E1D', linewidth=1.5, direction='cw')
         
         # Resultant phasor
-        draw_phasor(ax, (0, 0), lower_end, color='#F18F01', linewidth=3.0, alpha=0.7)
+        offset = 0.03
+        draw_phasor(ax, (offset, -offset), (lower_end[0] + offset, lower_end[1] - offset), color="#000000", linewidth=3.0, alpha=0.7)
         
         plt.tight_layout()
         save_figure(fig, f'illustration_3_modulation_{chr(97+idx)}_{time_label.replace("/", "_")}')

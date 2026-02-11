@@ -123,7 +123,7 @@ def draw_square_brace(ax, center, length, angle, color='black', linewidth=2.0):
     ax.plot([end[0], end[0] + orthogonal_dx], [end[1], end[1] + orthogonal_dy], 
             color=color, linewidth=linewidth, zorder=2)
 
-def draw_phasor(ax, start, end, color='#2E86AB', linewidth=2.5, alpha=1.0, label=None):
+def draw_phasor(ax, start, end, color='#2E86AB', linewidth=2.5, label=None):
     """
     Draw a phasor arrow from start to end.
     
@@ -133,7 +133,6 @@ def draw_phasor(ax, start, end, color='#2E86AB', linewidth=2.5, alpha=1.0, label
         end: Tuple (x, y) for arrow end position
         color: Arrow color
         linewidth: Arrow line width
-        alpha: Transparency
         label: Optional label for the arrow
     """
     arrow = FancyArrowPatch(
@@ -141,7 +140,6 @@ def draw_phasor(ax, start, end, color='#2E86AB', linewidth=2.5, alpha=1.0, label
         arrowstyle='->,head_width=0.4,head_length=0.6',
         color=color,
         linewidth=linewidth,
-        alpha=alpha,
         mutation_scale=20,
         zorder=3
     )
@@ -210,7 +208,7 @@ def draw_double_headed_arrow(ax, center, direction, length, color='black', linew
     ax.add_patch(arrow)
 
 
-def draw_circle(ax, center, radius, color='black', linestyle='--', linewidth=1.0, alpha=0.5):
+def draw_circle(ax, center, radius, color='black', linestyle='--', linewidth=1.0):
     """
     Draw a circle.
     
@@ -221,10 +219,9 @@ def draw_circle(ax, center, radius, color='black', linestyle='--', linewidth=1.0
         color: Circle color
         linestyle: Line style
         linewidth: Line width
-        alpha: Transparency
     """
     circle = plt.Circle(center, radius, fill=False, color=color, 
-                       linestyle=linestyle, linewidth=linewidth, alpha=alpha, zorder=1)
+                       linestyle=linestyle, linewidth=linewidth, zorder=1)
     ax.add_patch(circle)
 
 def save_figure(fig, filename):
@@ -428,7 +425,7 @@ def illustration_3_amplitude_modulation():
         # Carrier phasor at 45 degrees, magnitude 1
         carrier_angle = np.radians(45)
         carrier_end = (np.cos(carrier_angle), np.sin(carrier_angle))
-        draw_phasor(ax, (0, 0), carrier_end, color='#2E86AB', linewidth=5, alpha=0.5)
+        draw_phasor(ax, (0, 0), carrier_end, color='#2E86AB', linewidth=5)
         
         # Upper sideband: magnitude 0.2, starts from carrier end
         upper_angle = np.radians(angles[0])
@@ -438,14 +435,14 @@ def illustration_3_amplitude_modulation():
         draw_phasor(ax, upper_start, upper_end, color='#A23B72', linewidth=3.5)
         
         # Draw circle for upper sideband
-        draw_circle(ax, carrier_end, 0.2, color='#A23B72', linestyle=':', linewidth=1.0, alpha=0.3)
+        draw_circle(ax, carrier_end, 0.2, color='#A23B72', linestyle=':', linewidth=1.0)
         
         # Curved arrow for upper sideband (counterclockwise)
-        arrow_radius = 0.25
+        arrow_radius = 0.22
         arrow_angle = angles[0]
         arrow_center = carrier_end
-        draw_curved_arrow(ax, arrow_center, arrow_radius, arrow_angle - 15, 
-                         arrow_angle + 15, color='#A23B72', linewidth=1.5, direction='ccw')
+        draw_curved_arrow(ax, arrow_center, arrow_radius, arrow_angle, 
+                         arrow_angle + 30, color='#A23B72', linewidth=2, direction='ccw')
         
         # Lower sideband: magnitude 0.2, starts from upper sideband end
         lower_angle = np.radians(angles[1])
@@ -455,17 +452,20 @@ def illustration_3_amplitude_modulation():
         draw_phasor(ax, lower_start, lower_end, color='#C73E1D', linewidth=3.5)
         
         # Draw circle for lower sideband
-        draw_circle(ax, upper_end, 0.2, color='#C73E1D', linestyle=':', linewidth=1.0, alpha=0.3)
+        draw_circle(ax, upper_end, 0.2, color='#C73E1D', linestyle=':', linewidth=1.0)
         
         # Curved arrow for lower sideband (clockwise)
         arrow_angle_lower = angles[1]
         arrow_center_lower = upper_end
-        draw_curved_arrow(ax, arrow_center_lower, arrow_radius, arrow_angle_lower + 15,
-                         arrow_angle_lower - 15, color='#C73E1D', linewidth=1.5, direction='cw')
+        draw_curved_arrow(ax, arrow_center_lower, arrow_radius, arrow_angle_lower ,
+                         arrow_angle_lower - 30, color='#C73E1D', linewidth=2, direction='cw')
         
         # Resultant phasor
         offset = 0.03
-        draw_phasor(ax, (offset, -offset), (lower_end[0] + offset, lower_end[1] - offset), color="#000000", linewidth=3.0, alpha=0.7)
+        draw_phasor(ax, (offset, -offset), (lower_end[0] + offset, lower_end[1] - offset), color="#000000", linewidth=3.0)
+
+        # Add label for the time
+        add_text(ax, (0.7, 0.25), time_label, fontsize=32, color='#333333')
         
         plt.tight_layout()
         save_figure(fig, f'illustration_3_modulation_{chr(97+idx)}_{time_label.replace("/", "_")}')
@@ -561,7 +561,7 @@ def illustration_5_optical_cavity():
             
             # Draw phasor
             draw_phasor(ax, tuple(current_pos), tuple(next_pos), 
-                       color=color, linewidth=1.0, alpha=0.6)
+                       color=color, linewidth=1.0)
             
             endpoints.append(tuple(next_pos))
             current_pos = next_pos
@@ -573,21 +573,21 @@ def illustration_5_optical_cavity():
     
     # Chain a: r=0.8, phi=-10°, n=100, blue
     final_a, endpoints_a = draw_phasor_chain(ax, 0.8, -10, 100, '#4A90E2')
-    draw_phasor(ax, (0, 0), tuple(final_a), color='#1E5A8E', linewidth=2.5, alpha=0.9)
+    draw_phasor(ax, (0, 0), tuple(final_a), color='#1E5A8E', linewidth=2.5)
     
     # Chain b: r=0.8, phi=-3°, n=100, green
     final_b, endpoints_b = draw_phasor_chain(ax, 0.8, -3, 100, '#7CB342')
-    draw_phasor(ax, (0, 0), tuple(final_b), color='#4A7C28', linewidth=2.5, alpha=0.9)
+    draw_phasor(ax, (0, 0), tuple(final_b), color='#4A7C28', linewidth=2.5)
     
     # Chain c: r=0.8, phi=0°, n=100, orange
     final_c, endpoints_c = draw_phasor_chain(ax, 0.8, 0, 100, '#FF9800')
-    draw_phasor(ax, (0, 0), tuple(final_c), color='#CC7700', linewidth=2.5, alpha=0.9)
+    draw_phasor(ax, (0, 0), tuple(final_c), color='#CC7700', linewidth=2.5)
     
     # Add a dotted circle - adjust these parameters as needed
     circle_center = (2.5, 2.5)
     circle_radius = 3.0
     draw_circle(ax, circle_center, circle_radius, color='#666666', 
-               linestyle='--', linewidth=1.5, alpha=0.5)
+               linestyle='--', linewidth=1.5)
     
     plt.tight_layout()
     save_figure(fig, 'illustration_5a_optical_cavity_varying_phi')
@@ -598,21 +598,21 @@ def illustration_5_optical_cavity():
     
     # Chain a: r=0.8, phi=-3°, n=100, blue
     final_a, endpoints_a = draw_phasor_chain(ax, 0.8, -3, 100, '#4A90E2')
-    draw_phasor(ax, (0, 0), tuple(final_a), color='#1E5A8E', linewidth=2.5, alpha=0.9)
+    draw_phasor(ax, (0, 0), tuple(final_a), color='#1E5A8E', linewidth=2.5)
     
     # Chain b: r=0.9, phi=-3°, n=100, green
     final_b, endpoints_b = draw_phasor_chain(ax, 0.9, -3, 100, '#7CB342')
-    draw_phasor(ax, (0, 0), tuple(final_b), color='#4A7C28', linewidth=2.5, alpha=0.9)
+    draw_phasor(ax, (0, 0), tuple(final_b), color='#4A7C28', linewidth=2.5)
     
     # Chain c: r=0.95, phi=-3°, n=100, orange
     final_c, endpoints_c = draw_phasor_chain(ax, 0.95, -3, 100, '#FF9800')
-    draw_phasor(ax, (0, 0), tuple(final_c), color='#CC7700', linewidth=2.5, alpha=0.9)
+    draw_phasor(ax, (0, 0), tuple(final_c), color='#CC7700', linewidth=2.5)
     
     # Add a dotted circle - adjust these parameters as needed
     circle_center = (5.0, 5.0)
     circle_radius = 7.0
     draw_circle(ax, circle_center, circle_radius, color='#666666', 
-               linestyle='--', linewidth=1.5, alpha=0.5)
+               linestyle='--', linewidth=1.5)
     
     plt.tight_layout()
     save_figure(fig, 'illustration_5b_optical_cavity_varying_r')

@@ -136,8 +136,10 @@ def draw_phasor(ax, start, end, color='#2E86AB', linewidth=2.5, label=None):
         label: Optional label for the arrow
     """
     arrow = FancyArrowPatch(
-        start, end,
+        start, end,  # Extend slightly beyond the end point for better arrowhead visibility
         arrowstyle='->,head_width=0.4,head_length=0.6',
+        shrinkA=0,
+        shrinkB=0,
         color=color,
         linewidth=linewidth,
         mutation_scale=20,
@@ -380,12 +382,12 @@ def illustration_3_amplitude_modulation():
     fig, ax = setup_plot(xlim=(-0.2, 1.3), ylim=(-0.2, 1.3))
     
     # For visual purposes, draw a faint carrier behind the first one which extends to 1.0. Don't use transparency, but rather a lighter/more desaturated color.
-    draw_phasor(ax, (0, 0), (1.56 * np.cos(np.radians(45)), 1.56 * np.sin(np.radians(45))), 
+    draw_phasor(ax, (0, 0), (1.25 * np.cos(np.radians(45)), 1.25 * np.sin(np.radians(45))), 
                 color='#AED6F1', linewidth=5)
 
     # Carrier phasor at 45 degrees, magnitude 1
     angle = np.radians(45)
-    magnitude = 1.3
+    magnitude = 1.0
     end_point = (magnitude * np.cos(angle), magnitude * np.sin(angle))
     draw_phasor(ax, (0, 0), end_point, color='#2E86AB', linewidth=5)
     
@@ -398,9 +400,9 @@ def illustration_3_amplitude_modulation():
     draw_double_headed_arrow(ax, center, direction, length=0.55, color='#333333', linewidth=3.5)
     
     # Add label for the amplitude of the carrier and of the modulated signal
-    add_text(ax, (0.6, 0.35), r'$A_0$', fontsize=24, color='#2E86AB')
-    add_text(ax, (0.4, 1.0), r'$A(t) = A_0 \left( 1 + m \cos \omega_m t \right)$', fontsize=24, color='#333333')
-    add_text(ax, (1.1, 0.85), r'$m \cdot A_0$', fontsize=24, color='#333333')
+    add_text(ax, (0.5, 0.25), r'$A_0$', fontsize=24, color='#2E86AB')
+    add_text(ax, (0.4, 0.9), r'$A(t) = A_0 \left( 1 + m \cos \omega_m t \right)$', fontsize=24, color='#333333')
+    add_text(ax, (1.0, 0.65), r'$m \cdot A_0$', fontsize=24, color='#333333')
 
     # Add a square brace '[' to indicate the amplitude variation, angled at 45 degrees to run parallel with the modulation direction
     brace_center = (end_point[0] + 0.125, end_point[1] + 0.025)
@@ -419,50 +421,69 @@ def illustration_3_amplitude_modulation():
         ('t=3T/4', 3*np.pi/2, [315, 135]) # d) Sidebands perpendicular again
     ]
     
+    # Offsets for sidebands: [(upper_x, upper_y), (lower_x, lower_y)] for each time
+    # These offsets are applied to the start position of each sideband
+    offsets = [
+        [(0, 0), (0, 0)],  # t=0
+        [(0, 0), (0.02, 0.02)],  # t=T/4
+        [(0.02, -0.02), (0, 0)],  # t=T/2
+        [(0, 0), (0.02, 0.02)]   # t=3T/4
+    ]
+    
     for idx, (time_label, phase_offset, angles) in enumerate(times):
         fig, ax = setup_plot(xlim=(-0.2, 1.3), ylim=(-0.2, 1.3))
+        
+        # Get offsets for this time position
+        upper_offset = offsets[idx][0]
+        lower_offset = offsets[idx][1]
         
         # Carrier phasor at 45 degrees, magnitude 1
         carrier_angle = np.radians(45)
         carrier_end = (np.cos(carrier_angle), np.sin(carrier_angle))
         draw_phasor(ax, (0, 0), carrier_end, color='#2E86AB', linewidth=5)
         
-        # Upper sideband: magnitude 0.2, starts from carrier end
+        # Upper sideband: magnitude 0.2, starts from carrier end (with offset)
         upper_angle = np.radians(angles[0])
-        upper_start = carrier_end
+        upper_start = (carrier_end[0] + upper_offset[0], carrier_end[1] + upper_offset[1])
         upper_end = (upper_start[0] + 0.2 * np.cos(upper_angle),
                      upper_start[1] + 0.2 * np.sin(upper_angle))
         draw_phasor(ax, upper_start, upper_end, color='#A23B72', linewidth=3.5)
         
-        # Draw circle for upper sideband
+        # Calculate un-offset end position for upper sideband (for circle/arrow center)
+        upper_end_no_offset = (carrier_end[0] + 0.2 * np.cos(upper_angle),
+                               carrier_end[1] + 0.2 * np.sin(upper_angle))
+        
+        # Draw circle for upper sideband (centered at un-offset position)
         draw_circle(ax, carrier_end, 0.2, color='#A23B72', linestyle=':', linewidth=1.0)
         
-        # Curved arrow for upper sideband (counterclockwise)
-        arrow_radius = 0.22
+        # Curved arrow for upper sideband (counterclockwise, centered at un-offset position)
+        arrow_radius = 0.2
         arrow_angle = angles[0]
-        arrow_center = carrier_end
-        draw_curved_arrow(ax, arrow_center, arrow_radius, arrow_angle, 
-                         arrow_angle + 30, color='#A23B72', linewidth=2, direction='ccw')
+        draw_curved_arrow(ax, carrier_end, arrow_radius, arrow_angle, 
+                         arrow_angle + 50, color='#A23B72', linewidth=2, direction='ccw')
         
-        # Lower sideband: magnitude 0.2, starts from upper sideband end
+        # Lower sideband: magnitude 0.2, starts from upper sideband end (with offset)
         lower_angle = np.radians(angles[1])
-        lower_start = upper_end
+        lower_start = (upper_end[0] + lower_offset[0], upper_end[1] + lower_offset[1])
         lower_end = (lower_start[0] + 0.2 * np.cos(lower_angle),
                      lower_start[1] + 0.2 * np.sin(lower_angle))
         draw_phasor(ax, lower_start, lower_end, color='#C73E1D', linewidth=3.5)
         
-        # Draw circle for lower sideband
-        draw_circle(ax, upper_end, 0.2, color='#C73E1D', linestyle=':', linewidth=1.0)
+        # Calculate un-offset end position for lower sideband (for resultant vector)
+        lower_end_no_offset = (upper_end_no_offset[0] + 0.2 * np.cos(lower_angle),
+                               upper_end_no_offset[1] + 0.2 * np.sin(lower_angle))
         
-        # Curved arrow for lower sideband (clockwise)
+        # Draw circle for lower sideband (centered at un-offset position)
+        draw_circle(ax, upper_end_no_offset, 0.2, color='#C73E1D', linestyle=':', linewidth=1.0)
+        
+        # Curved arrow for lower sideband (clockwise, centered at un-offset position)
         arrow_angle_lower = angles[1]
-        arrow_center_lower = upper_end
-        draw_curved_arrow(ax, arrow_center_lower, arrow_radius, arrow_angle_lower ,
-                         arrow_angle_lower - 30, color='#C73E1D', linewidth=2, direction='cw')
+        draw_curved_arrow(ax, upper_end_no_offset, arrow_radius, arrow_angle_lower ,
+                         arrow_angle_lower - 50, color='#C73E1D', linewidth=2, direction='cw')
         
-        # Resultant phasor
+        # Resultant phasor (using un-offset end position)
         offset = 0.03
-        draw_phasor(ax, (offset, -offset), (lower_end[0] + offset, lower_end[1] - offset), color="#000000", linewidth=3.0)
+        draw_phasor(ax, (offset, -offset), (lower_end_no_offset[0] + offset, lower_end_no_offset[1] - offset), color="#000000", linewidth=3.0)
 
         # Add label for the time
         add_text(ax, (0.7, 0.25), time_label, fontsize=32, color='#333333')
